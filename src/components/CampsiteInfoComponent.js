@@ -4,6 +4,7 @@ import { Card, CardImg, CardText, CardBody, CardTitle } from 'reactstrap';
 
 class CampsiteInfo extends Component {
   renderCampsite(campsite) {
+    
     return (
       <div className='col-md-5 m-1'>
         <Card>
@@ -18,6 +19,7 @@ class CampsiteInfo extends Component {
   }
   
   render() {
+    console.log (this.props);
     if (this.props.campsite) {
         return (
             <div className='container'>
@@ -31,17 +33,18 @@ class CampsiteInfo extends Component {
     return <div />;
   }
   renderComments(comments) {
-    if (comments) {
+    
+    if (this.props.campsite.comments) {
       return (
         <div className='col-md-5 m-1'>
           <h4>Comments</h4>
-          {comments.map((comments) => {
+          {this.props.campsite.comments.map((comment) => {
             return (
-              <p key={comments.id}>
-                {comments.text} <br />
-                {comments.author}{''}
-                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comments.date)))}
-              </p>
+              <div key={comment.id}>
+                {comment.text} <br></br>
+                --{comment.author}{'  '}
+                {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}<br></br><br></br>
+              </div>
             );
           })}
         </div>
