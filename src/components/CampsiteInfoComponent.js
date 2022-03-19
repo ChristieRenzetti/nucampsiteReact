@@ -1,6 +1,103 @@
 import React from 'react';
-import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Control, LocalForm, Errors } from "react-redux-form";
+
+const maxLength = (len) => (val) => !val || val.length <= len;
+const minLength = (len) => (val) => val && val.length >= len;
+
+class CommentForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isModalOpen: false,
+    };
+    this.toggleModal = this.toggleModal.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  toggleModal() {
+    this.setState({ isModalOpen: !this.state.isModalOpen });
+  }
+
+  handleSubmit(values) {
+    console.log("Current state is: " + JSON.stringify(values));
+    alert("Current state is: " + JSON.stringify(values));
+
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <Button onClick={this.toggleModal} className="fa fa-pencil fa-lg" outline>
+          Submit Comment
+        </Button>
+        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+          <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
+          <ModalBody>
+            <LocalForm onSubmit={this.handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="rating">Rating</label>
+                <Control.select
+                  model=".rating"
+                  id="rating"
+                  name="rating"
+                  className="form-control"
+                >
+                  <option>1</option>
+                  <option>2</option>
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </Control.select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="author">Author</label>
+                <Control.text
+                  model=".author"
+                  id="author"
+                  name="author"
+                  className="form-control"
+                  placeholder="author"
+                  validators={{
+                    minLength: minLength(2),
+                    maxLength: maxLength(15),
+                  }}
+                />
+                <Errors
+                  className="text-danger"
+                  model=".author"
+                  show="touched"
+                  component="div"
+                  messages={{
+                    minLength: "Must be at least 2 characters",
+                    maxLength: "Must be 15 characters or fewer",
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="comment">Comment</label>
+                <Control.textarea
+                  model=".comment"
+                  id="comment"
+                  name="comment"
+                  className="form-control"
+                  placeholder="Comment"
+                  rows="6"
+                />
+              </div>
+              <button className="bg-primary text-light">Submit</button>
+            </LocalForm>
+          </ModalBody>
+        </Modal>
+      </React.Fragment>
+
+    );
+  }
+}
+
+
+
 
 function RenderCampsite({ campsite }) {
 
@@ -9,7 +106,7 @@ function RenderCampsite({ campsite }) {
       <Card>
         <CardImg top src={campsite.image} alt={campsite.name} />
         <CardBody>
-           <CardText>{campsite.description}</CardText>
+          <CardText>{campsite.description}</CardText>
         </CardBody>
       </Card>
     </div>
@@ -30,6 +127,7 @@ function RenderComments({ comments }) {
             </div >
           );
         })}
+        <CommentForm addComment={comments} campsiteId={CampsiteInfo} />
       </div>
     );
   }
@@ -41,15 +139,15 @@ function CampsiteInfo(props) {
     return (
       <div className="container">
         <div className="row">
-                    <div className="col">
-                        <Breadcrumb>
-                            <BreadcrumbItem><Link to="/directory">Directory</Link></BreadcrumbItem>
-                            <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
-                        </Breadcrumb>
-                        <h2>{props.campsite.name}</h2>
-                        <hr />
-                    </div>
-                </div>
+          <div className="col">
+            <Breadcrumb>
+              <BreadcrumbItem><Link to="/directory">Directory</Link></BreadcrumbItem>
+              <BreadcrumbItem active>{props.campsite.name}</BreadcrumbItem>
+            </Breadcrumb>
+            <h2>{props.campsite.name}</h2>
+            <hr />
+          </div>
+        </div>
         <div className="row">
           <RenderCampsite campsite={props.campsite} />
           <RenderComments comments={props.comments} />
